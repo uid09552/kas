@@ -128,10 +128,16 @@ class BuildCommand(Command):
         """
             Executes the bitbake build command.
         """
+        
+        additional_cmd_args = []
+        if logging.getLogger().level == logging.DEBUG:
+            additional_cmd_args += ["-DDDv"]
+        
         # Start bitbake build of image
         bitbake = find_program(ctx.environ['PATH'], 'bitbake')
         cmd = ([bitbake, '-k', '-c', ctx.config.get_bitbake_task()]
-               + ctx.config.get_bitbake_targets())
+               + ctx.config.get_bitbake_targets()
+               + additional_cmd_args)
         if sys.stdout.isatty():
             logging.info('%s$ %s', ctx.build_dir, ' '.join(cmd))
             subprocess.call(cmd, env=ctx.environ, cwd=ctx.build_dir)
